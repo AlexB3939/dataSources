@@ -1,9 +1,14 @@
 import streamlit as st
 import pandas as pd
+from sentence_transformers import SentenceTransformer
 
 import main
 
 # repo = st.sidebar.radio("Select a repository:", ["sourcegraph/cody", "sourcegraph/sourcegraph"])
+model_name = st.sidebar.radio("Select a model to use for semantic similarity:", [
+    "msmarco-distilbert-base-v2",
+    "all-MiniLM-L6-v2",
+])
 repo = st.text_input('Repository full name:', value="sourcegraph/cody", placeholder="sourcegraph/cody")
 attribute = st.selectbox("Pick attribute to evaluate similarity on", ["title", "body"])
 query = st.text_area("Query")
@@ -11,7 +16,7 @@ num_results = st.slider("Number of results:", 1, 10)
 gh = main.load_github_api_obj()
 issues = main.issues_for_repo(gh, repo)
 issue_attribute = [getattr(issue, attribute) for issue in issues]
-results_indices = main.get_most_related_issues_indices(query, issue_attribute, num_results)
+results_indices = main.get_most_related_issues_indices(query, issue_attribute, model_name, num_results)
 results = [(issues[idx_tensor.item()], score_tensor.item()) for (idx_tensor, score_tensor) in results_indices]
 results_table = [["Title", "Body", "Score", "URL"]]
 for result, score in results:

@@ -9,6 +9,7 @@ from github import Auth
 import subprocess
 
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
 
 import semantic_search
 from pydantic import BaseModel
@@ -69,8 +70,9 @@ def issues_for_repo(github_instance: Github, repo_name: str):
 
 
 @streamlit.cache_data
-def get_most_related_issues_indices(query, issues: list, k=5):
-    indices = semantic_search.get_top_k_similar_sentences(query, issues, k=k)
+def get_most_related_issues_indices(query, issues: list, model_name, k=5):
+    embedder = SentenceTransformer(model_name)
+    indices = semantic_search.get_top_k_similar_sentences(query, issues, embedder, k=k)
     return indices
 
 

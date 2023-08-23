@@ -10,20 +10,20 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 
 # model_asym = 'msmarco-distilroberta-base-v3'
-model_asym = 'msmarco-distilbert-base-v2'
-model_sym = 'all-MiniLM-L6-v2'
-embedder = SentenceTransformer(model_asym)
+# model_asym = 'msmarco-distilbert-base-v2'
+# model_sym = 'all-MiniLM-L6-v2'
+# embedder = SentenceTransformer(model_asym)
 
 
-def get_sentence_embeddings(sentences):
+def get_sentence_embeddings(sentences, embedder):
     sentence_embeddings = embedder.encode(sentences, convert_to_tensor=True)
     return sentence_embeddings
 
 
-def get_top_k_similar_sentences(query, corpus, k=5):
+def get_top_k_similar_sentences(query, corpus, embedder, k=5):
     # Find the closest k sentences of the corpus for each query sentence based on cosine similarity
     top_k = min(k, len(corpus))
-    corpus_embeddings = get_sentence_embeddings(corpus)
+    corpus_embeddings = get_sentence_embeddings(corpus, embedder)
     query_embedding = embedder.encode(query, convert_to_tensor=True)
 
     # We use cosine-similarity and torch.topk to find the highest 5 scores
