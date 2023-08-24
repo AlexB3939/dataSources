@@ -6,5 +6,5 @@
 2. Download and install poetry if you do not have it
 3. Create a virtual environment
 4. Install dependencies with `poetry install`
-5. Run `streamlit run app.py`
+5. Run `streamlit run streamlit_app.py`
 6. Enjoy!
