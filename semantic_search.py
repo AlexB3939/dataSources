@@ -12,6 +12,7 @@ class SentenceEmbedder:
     def get_sentence_embeddings(self, sentences: list[str]) -> torch.Tensor:
         embeddings = []
         for sentence in sentences:
+            assert isinstance(sentence, str), f"Sentence must be a string, got {type(sentence)}"
             if sentence not in self.cache:
                 self.cache[sentence] = self.embedder.encode([sentence])
             embeddings.append(self.cache[sentence])
@@ -23,13 +24,14 @@ class SentenceEmbedder:
         top_k = min(k, len(corpus))
 
         corpus_embeddings = self.get_sentence_embeddings(corpus)
-        streamlit.write(f"corpus embeddings shape: {corpus_embeddings.size()}")
+        corpus_embeddings = torch.squeeze(corpus_embeddings)
+        # streamlit.write(f"corpus embeddings shape: {corpus_embeddings.size()}")
         query_embedding = self.embedder.encode(query, convert_to_tensor=True)
-        streamlit.write(f"query embedding shape: {query_embedding.size()}")
+        # streamlit.write(f"query embedding shape: {query_embedding.size()}")
 
         # We use cosine-similarity and torch.topk to find the highest 5 scores
         cos_scores = util.cos_sim(query_embedding, corpus_embeddings)[0]
         top_results = torch.topk(cos_scores, k=top_k)
 
-        results = [(idx, score) for score, idx in zip(top_results[0], top_results[1])]
+        results = [(idx_tensor.item(), score_tensor.item()) for score_tensor, idx_tensor in zip(top_results[0], top_results[1])]
         return results

@@ -19,9 +19,11 @@ sentence_embedder = semantic_search.SentenceEmbedder(model_name)
 repo = st.text_input('Repository full name:', value="sourcegraph/cody", placeholder="sourcegraph/cody")
 attribute = st.selectbox("Pick issue attribute to evaluate similarity on", ["title", "body"])
 query = st.text_area("Query")
+num_results = st.slider("Number of results:", min_num_results, max_num_results, value=5)
+
+# prevent empty query from running and causing an error
 if query == "":
     st.stop()
-num_results = st.slider("Number of results:", min_num_results, max_num_results, value=5)
 
 gh = github_api.load_github_api_obj()
 
